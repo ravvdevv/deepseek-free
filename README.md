@@ -1,9 +1,15 @@
 # deepseek-free
 
-<p align="center">
-  <strong>Free DeepSeek API</strong> — run DeepSeek Web Chat like an API.<br/>
-  No key. No signup. No cost.
-</p>
+```text
+███████ ██████  ███████ ███████ ██████  ███████ ███████ ███████ ██   ██
+██      ██   ██ ██      ██      ██   ██ ██      ██      ██      ██  ██
+█████   ██████  █████   █████   ██   ██ █████   █████   █████   █████
+██      ██   ██ ██      ██      ██   ██ ██      ██      ██      ██  ██
+██      ██   ██ ███████ ███████ ██████  ███████ ███████ ███████ ██   ██
+
+   Free DeepSeek API — run DeepSeek Web Chat like an API.
+   No key. No signup. No cost.
+```
 
 <p align="center">
   <a href="https://github.com/ravvdevv/deepseek-free/blob/main/LICENSE"><img alt="License MIT" src="https://img.shields.io/badge/license-MIT-green.svg" /></a>
