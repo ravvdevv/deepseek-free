@@ -5,6 +5,10 @@
 </p>
 
 <p align="center">
+  <strong>Free DeepSeek API</strong> — run DeepSeek Web Chat like an API. No key, no signup, no cost.
+</p>
+
+<p align="center">
   <a href="https://github.com/ravvdevv/deepseek-free/blob/main/LICENSE"><img alt="License MIT" src="https://img.shields.io/badge/license-MIT-green.svg" /></a>
   <img alt="Node.js 18 plus" src="https://img.shields.io/badge/node-18%2B-339933.svg" />
   <img alt="No npm dependencies" src="https://img.shields.io/badge/dependencies-0-blue.svg" />
@@ -20,9 +24,31 @@
   <a href="#-open-webui">Open WebUI</a>
 </p>
 
-**deepseek-free** spins up a local API server for **DeepSeek Web Chat** (`chat.deepseek.com`) and lets you plug DeepSeek Web into Open WebUI, LiteLLM, Hermes, Claude Code, OpenAI SDK-style clients, and any other OpenAI-compatible tool.
+## What is this?
 
-It runs through your ordinary, already-logged-in DeepSeek account in a dedicated Chrome profile. The local server accepts API requests and then talks to DeepSeek Web itself through the saved browser session. No API key from DeepSeek, no npm dependencies.
+DeepSeek Web Chat is free. But it lives in a browser tab — you can't point your code at it.
+
+**deepseek-free turns that tab into an API.** Log in once, and any tool on your machine can send requests to DeepSeek at `http://localhost:9655`.
+
+```text
+your app  ──▶  deepseek-free  ──▶  DeepSeek Web Chat
+             (localhost:9655)
+```
+
+## Why use it
+
+| You want to | Do this |
+| --- | --- |
+| DeepSeek in an AI chat app | Point Open WebUI, LibreChat, or any chat UI at `http://localhost:9655/v1` |
+| DeepSeek as a coding agent | Set `ANTHROPIC_BASE_URL=http://127.0.0.1:9655` and run Claude Code |
+| DeepSeek in your own scripts | `npm start`, then `curl` the OpenAI endpoint |
+| Free API in CI or on a VPS | Deploy headless — no browser on screen needed |
+
+## How it works
+
+It runs through your ordinary, already-logged-in DeepSeek account in a dedicated Chrome profile. The local server takes API requests and talks to DeepSeek Web itself through that saved browser session. **No DeepSeek API key. No npm dependencies.**
+
+What you get: OpenAI Chat Completions, an Anthropic Messages shim, an OpenAI Responses shim, SSE streaming, reasoning output, tool calling, vision, one isolated session per agent, and automatic recovery from stale sessions.
 
 > ⚠️ This is an experimental web-chat proxy. DeepSeek can change its internal web API without notice. For production use, the official paid DeepSeek API is the safer bet.
 
@@ -30,6 +56,9 @@ It runs through your ordinary, already-logged-in DeepSeek account in a dedicated
 
 ## Table of contents
 
+- [What is this?](#what-is-this)
+- [Why use it](#why-use-it)
+- [How it works](#how-it-works)
 - [What you get](#-what-you-get)
 - [Features](#-features)
 - [Quick start](#-quick-start)
