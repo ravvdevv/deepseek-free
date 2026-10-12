@@ -98,6 +98,11 @@ async function main(args = process.argv.slice(2)) {
   return ok ? 0 : 2;
 }
 if (require.main === module) {
-  main().then(code => process.exit(code)).catch(e => { console.error('[doctor] ERROR:', e.message); process.exit(1); });
+    // Set exitCode instead of calling process.exit(): the PoW check leaves live
+    // sockets behind, and forcing exit mid-teardown trips a libuv assertion on
+    // Windows ("UV_HANDLE_CLOSING"). Draining the loop closes them once.
+    main()
+        .then(code => { process.exitCode = code; })
+        .catch(e => { console.error('[doctor] ERROR:', e.message); process.exitCode = 1; });
 }
 module.exports = { checkAuthFile, authPaths };
