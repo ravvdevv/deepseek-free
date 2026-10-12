@@ -2246,6 +2246,19 @@ function storeHistory(session, prompt, content, toolCall) {
     }
 }
 
+// Tool payloads carry paths inside a JSON string, so Windows separators arrive
+// doubled ("C:\\Users\\..."). Undo that; fall back to the raw text when the
+// value is not valid JSON escaping.
+function unescapeJsonPath(value) {
+    const raw = String(value || '');
+    if (!raw.includes('\\')) return raw;
+    try {
+        return JSON.parse(`"${raw}"`);
+    } catch (e) {
+        return raw;
+    }
+}
+
 // Extract MEDIA: paths for screenshots produced during the current turn, so a
 // Hermes/Telegram gateway delivers the file. Only messages since the latest
 // user message are scanned; older screenshots were delivered with earlier
@@ -2272,11 +2285,17 @@ function extractScreenshotPaths(messages) {
         if (msg.role === 'tool') {
             // screenshot_path/path fields come directly from browser_vision.
             const pngMatch = content.match(/["'](screenshot_path|path)["']\s*:\s*["']([^"']+\.(?:png|jpg|jpeg|webp|gif))["']/i);
-            if (pngMatch && pngMatch[2].startsWith('/')) addPath(pngMatch[2]);
-            for (const tag of content.match(/MEDIA:(\S+)/g) || []) addPath(tag.replace(/^MEDIA:/, ''));
+            // path.isAbsolute, not startsWith('/'): Windows screenshots live on
+            // C:\... and were silently dropped before.
+            if (pngMatch) {
+                const filePath = unescapeJsonPath(pngMatch[2]);
+                if (path.isAbsolute(filePath)) addPath(filePath);
+            }
+            for (const tag of content.match(/MEDIA:(\S+)/g) || []) addPath(unescapeJsonPath(tag.replace(/^MEDIA:/, '')));
         }
         if (msg.role === 'user' || msg.role === 'assistant') {
-            const pathRegex = /(\/[^\s<>"']+\.(?:png|jpg|jpeg|webp|gif))/gi;
+            // Absolute POSIX (/a/b.png) or Windows (C:\a\b.png) image paths.
+            const pathRegex = /((?:\/[^\s<>"']+|[A-Za-z]:\\[^\s<>"']+)\.(?:png|jpg|jpeg|webp|gif))/gi;
             let match;
             while ((match = pathRegex.exec(content)) !== null) addPath(match[1]);
         }

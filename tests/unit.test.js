@@ -930,6 +930,27 @@ test('screenshot extraction handles array content and only scans the current tur
   assert.deepEqual(paths, [`MEDIA:${newShot}`]);
 });
 
+test('screenshot extraction handles Windows paths from JSON-escaped tool payloads', () => {
+  const dir = tmpdir();
+  const shot = path.join(dir, 'win.png');
+  fs.writeFileSync(shot, 'x');
+  // Tool results are JSON, so Windows separators arrive doubled.
+  const payload = JSON.stringify({ screenshot_path: shot });
+  const paths = serverInternals.extractScreenshotPaths([
+    { role: 'user', content: 'look' },
+    { role: 'tool', content: payload },
+  ]);
+  assert.deepEqual(paths, [`MEDIA:${shot}`]);
+});
+
+test('screenshot extraction still rejects relative paths', () => {
+  const paths = serverInternals.extractScreenshotPaths([
+    { role: 'user', content: 'shot' },
+    { role: 'tool', content: JSON.stringify({ screenshot_path: 'relative/out.png' }) },
+  ]);
+  assert.deepEqual(paths, []);
+});
+
 test('envelopes nested in other JSON or in foreign code fences are never executed', () => {
   const nested = 'log {"event": {"tool_call": {"name":"terminal","arguments":{"command":"rm -rf ~/build"}}}}';
   assert.equal(serverInternals.parseToolCall(nested), null);
